@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Directory App</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">Directory<span>App</span></div>
+            <div class="nav-links">
+                <a href="#" id="nav-home" class="active">Home</a>
+                <a href="#" id="nav-directory">View Directory</a>
+            </div>
+        </div>
+    </nav>
+
+    <main id="home-view" class="hero">
+        <div class="hero-content">
+            <h1>Connect with our community</h1>
+            <p>Access our complete database of professionals. Fast, reliable, and beautifully designed.</p>
+            <button id="cta-btn" class="cta-btn">Open User Directory</button>
+        </div>
+    </main>
+
+    <main id="directory-view" class="container hidden">
+        <header class="directory-header">
+            <h1>User Directory</h1>
+            <p class="subtitle">A complete list of our community members</p>
+        </header>
+        
+        <div id="loader" class="loader hidden"></div>
+        
+        <div id="error-container" class="error-container hidden">
+            <p id="error-message"></p>
+            <button id="error-home-btn" class="home-btn">Go to Home Page</button>
+        </div>
+        
+        <div id="users-grid" class="users-grid"></div>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
