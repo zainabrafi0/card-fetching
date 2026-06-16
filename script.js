@@ -1,12 +1,50 @@
-// Grab references to our DOM elements
+// --- DOM Elements: Navigation & Views ---
+const homeView = document.getElementById('home-view');
+const directoryView = document.getElementById('directory-view');
+const navHome = document.getElementById('nav-home');
+const navDirectory = document.getElementById('nav-directory');
+const ctaBtn = document.getElementById('cta-btn');
+const errorHomeBtn = document.getElementById('error-home-btn');
+
+// --- DOM Elements: Directory ---
 const usersGrid = document.getElementById('users-grid');
 const loader = document.getElementById('loader');
+const errorContainer = document.getElementById('error-container');
 const errorMessage = document.getElementById('error-message');
 
+// Track if we've already fetched users so we don't do it twice unnecessarily 
+let usersLoaded = false;
+
+// --- Navigation Logic ---
+function showHome() {
+    homeView.classList.remove('hidden');
+    directoryView.classList.add('hidden');
+    navHome.classList.add('active');
+    navDirectory.classList.remove('active');
+}
+
+function showDirectory() {
+    homeView.classList.add('hidden');
+    directoryView.classList.remove('hidden');
+    navHome.classList.remove('active');
+    navDirectory.classList.add('active');
+    
+    // Fetch users only if we haven't already
+    if (!usersLoaded) {
+        fetchAndDisplayUsers();
+    }
+}
+
+// --- Event Listeners ---
+navHome.addEventListener('click', showHome);
+navDirectory.addEventListener('click', showDirectory);
+ctaBtn.addEventListener('click', showDirectory);
+errorHomeBtn.addEventListener('click', showHome);
+
+// --- Fetch Logic ---
 async function fetchAndDisplayUsers() {
-    // 1. Show the loading spinner and hide previous errors/data
     loader.classList.remove('hidden');
-    errorMessage.classList.add('hidden');
+    errorContainer.classList.add('hidden');
     usersGrid.innerHTML = ''; 
 
     try {
@@ -14,39 +52,41 @@ async function fetchAndDisplayUsers() {
         if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
         }
-        // Parse the JSON body using await
+        
         const users = await response.json();
-        //Build the UI
         displayUsers(users);
+        usersLoaded = true; // Mark as successful so we don't fetch again
 
     } catch (error) {
         console.error("Fetching failed:", error);
         errorMessage.textContent = "Failed to load users. Please check your connection or try again later.";
-        errorMessage.classList.remove('hidden');
+        errorContainer.classList.remove('hidden');
+        usersLoaded = false; // Allow retrying if they come back to this screen
         
     } finally {
         loader.classList.add('hidden');
     }
 }
 
-//  function to create cards and append
+// --- UI Logic ---
 function displayUsers(users) {
     users.forEach(user => {
-        // Create the card container
         const card = document.createElement('div');
         card.classList.add('card');
-        // Insert the user data as HTML
+        const initial = user.name.charAt(0);
+
         card.innerHTML = `
-            <h2>${user.name}</h2>
-            <p><strong>Username:</strong> @${user.username}</p>
-            <p><strong>Email:</strong> ${user.email}</p>
-            <p><strong>Company:</strong> ${user.company.name}</p>
-            <p><strong>City:</strong> ${user.address.city}</p>
+            <div class="card-header">
+                <div class="avatar">${initial}</div>
+                <h2>${user.name}</h2>
+            </div>
+            <div class="card-body">
+                <p><strong>Username:</strong> @${user.username}</p>
+                <p><strong>Email:</strong> ${user.email}</p>
+                <p><strong>Company:</strong> ${user.company.name}</p>
+                <p><strong>City:</strong> ${user.address.city}</p>
+            </div>
         `;
- // Append to the grid
         usersGrid.appendChild(card);
     });
 }
-
-// Execute the function when the script loads
-fetchAndDisplayUsers();
